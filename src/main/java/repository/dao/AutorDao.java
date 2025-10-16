@@ -4,45 +4,34 @@ import entities.Autor;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
-import repository.IAutor;
+import repository.interfaces.IAutor;
 
 import java.util.List;
 import java.util.Optional;
 
-public class AutorDao {
+public class AutorDao implements IAutor {
     private final EntityManager em;
-
-    public AutorDao(EntityManager em){
-        this.em = em;
-    }
+    public AutorDao(EntityManager em) { this.em = em; }
 
     @Override
-    public Autor guardar(Autor autor) {
-        if (autor == null){
-            throw new IllegalArgumentException("El Autor no puede ser null");
-        }
-        EntityTransaction tx = em.getTransaction();
-        try {
-            if (autor.getId() == null){
-                tx.begin();
-                em.persist(autor);
-                tx.commit();
-                return  autor;
-            }
-        }catch (Exception e){
-            e.printStackTrace();
+    public Autor save(Autor autor) {
+        if (autor == null) return null;
+        if (autor.getId() == null) {
+            em.persist(autor);
+            return autor;
+        } else {
+            return em.merge(autor);
         }
     }
 
     @Override
-    public List<Autor> listar() {
-        return em.createQuery("FROM Autor", Autor.class).getResultList();
+    public List<Autor> findAll()
+    {
+        return em.createQuery("SELECT a FROM Autor a ORDER BY a.nombre", Autor.class).getResultList();
     }
 
     @Override
-    public Optional<Autor> buscarId(Long id){
-        if (id == null) return Optional.empty();
-        Autor au = em.find(Autor.class, id);
-        return Optional.ofNullable(au);
+    public Optional<Autor> findById(Long id) {
+        return Optional.ofNullable(em.find(Autor.class, id));
     }
 }
