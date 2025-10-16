@@ -1,7 +1,10 @@
 package repository.interfaces;
 
+import entities.Categoría;
+
 import java.util.List;
 
-public class ICategoria {
-    public List<Categoria> listar()
+public interface ICategoria {
+    Categoría save(Categoría categoria);
+    List<Categoría> findAll();
 }

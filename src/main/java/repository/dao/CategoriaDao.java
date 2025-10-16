@@ -1,43 +1,32 @@
 package repository.dao;
 
-import entities.Categoria;
+import entities.Categoría;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
-import repository.ICategoria;
+import repository.interfaces.ICategoria;
 
 import java.util.List;
-import java.util.Optional;
 
-public class CategoriaDao {
+
+public class CategoriaDao implements ICategoria{
     private final EntityManager em;
-    public CategoriaDao(EntityManager em) {this.em = em;}
+    public CategoriaDao(EntityManager em) { this.em = em; }
 
     @Override
-    public Categoria guardar(Categoria categoria){
-        if (categoria==null){throw new IllegalArgumentException("El Autor no puede ser null");}
-
-        EntityTransaction tx = em.getTransaction();
-        try{
-            if (categoria.getId() ==null){
-                tx.begin();
-                em.persist(categoria);
-                tx.commit();
-                return categoria;
-            }
-        }catch (Exception e){
-            e.printStackTrace();
+    public Categoría save(Categoría categoria) {
+        if (categoria == null) return null;
+        if (categoria.getId() == null) {
+            em.persist(categoria);
+            return categoria;
+        } else {
+            return em.merge(categoria);
         }
     }
 
     @Override
-    public List<Categoria> listar(){return em.createQuery("FROM Categoria", Categoria.class).getResultList();}
-
-    @Override
-    public Optional<Categoria> buscarId(Long id){
-        if (id==null){return Optional.empty();}
-        Categoria ct = em.find(Categoria.class, id);
-        return Optional.ofNullable(ct);
+    public List<Categoría> findAll() {
+        return em.createQuery("SELECT c FROM Categoría c ORDER BY c.nombre", Categoría.class)
+                .getResultList();
     }
-
 }

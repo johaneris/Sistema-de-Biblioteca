@@ -17,15 +17,19 @@ public class Categoría {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 150)
+    @Column(nullable = false ,length = 150)
     private String nombre;
 
     @ManyToMany (mappedBy = "categorias")
-    private Set<Categoría> categoría = new HashSet<>();
+    private Set<Libro> libros = new HashSet<>();
 
     public Categoría() {}
-
     public Categoría(String nombre) {this.nombre = nombre;}
+
+    public Long getId() { return id; }
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    public Set<Libro> getLibros() { return libros; }
 
     @Override
     public boolean equals(Object o)
